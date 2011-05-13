@@ -22,7 +22,7 @@ import org.bukkit.plugin.Plugin;
 public class Scrapyard extends JavaPlugin {
     private final ScrapyardYardSaleListener scrapyardYardSaleListener = new ScrapyardYardSaleListener(this);
     private ScrapyardItemDatabase scrapyardItemDatabase = null;
-    private PermissionHandler permissionHandler;
+    public static PermissionHandler permissionHandler;
 
     public double Cost;
     
@@ -56,15 +56,18 @@ public class Scrapyard extends JavaPlugin {
     
     public void setupPermissions() {
         Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
-        if(this.permissionHandler != null) {
-            this.permissionHandler = ((Permissions)permissionsPlugin).getHandler();
-        } else {
-            // Blablabla
+        
+        if(Scrapyard.permissionHandler == null) {
+            if(permissionsPlugin != null) {
+                Scrapyard.permissionHandler = ((Permissions)permissionsPlugin).getHandler();
+            } else {
+                // Blablabla
+            }
         }
     }
     
     public boolean hasPermission(Player player, String permissionNode) {
-        return this.permissionHandler.has(player, permissionNode);
+        return Scrapyard.permissionHandler.has(player, permissionNode);
     }
 
     public boolean scrapping(Player player) {
