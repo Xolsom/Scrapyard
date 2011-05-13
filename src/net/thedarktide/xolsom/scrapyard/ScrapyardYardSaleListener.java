@@ -1,13 +1,10 @@
 package net.thedarktide.xolsom.scrapyard;
 
-import java.util.Random;
-
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.CustomEventListener;
-import org.bukkit.inventory.ItemStack;
 
 /**
+ * Listener for the yardsale plugin event.
  * @author Xolsom
  */
 public class ScrapyardYardSaleListener extends CustomEventListener {
@@ -17,13 +14,18 @@ public class ScrapyardYardSaleListener extends CustomEventListener {
         this.plugin = plugin;
     }
     
-    //public boolean onCustomEvent(ScrapyardYardSaleEvent event) {
+    /**
+     * A custom event it checks for the YardSaleEvent event and starts scrapping.
+     * Also it does cancel the event, if the scrapping fails.
+     * @param event 
+     */
     public void onCustomEvent(Event event) {
         ScrapyardYardSaleEvent ySEvent = (ScrapyardYardSaleEvent)event;
         
-        if(!this.plugin.scrapping(ySEvent.getPlayer())) {
-            // Cancel
+        if(!this.plugin.startScrap(ySEvent.getPlayer())) {
+            ySEvent.setCancelled(true);
         }
-
+        
+        // Scrap successful
     }
 }

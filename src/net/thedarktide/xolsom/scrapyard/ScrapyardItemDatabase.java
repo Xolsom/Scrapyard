@@ -7,6 +7,7 @@ import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
 
 /**
+ * This is the item database simplyfing the methods to get allowed items from the yaml file.
  * @author Xolsom
  */
 public class ScrapyardItemDatabase extends Configuration {
@@ -18,12 +19,18 @@ public class ScrapyardItemDatabase extends Configuration {
         this.plugin = plugin;
     }
 
+    /**
+     * Returns an item or more respectively the id and the amount of the valuable material
+     * @param itemId
+     * @return Integer array (0: MaterialId, 1: Amount) or null (the item doesn't exist in the database or the definition is corrupt.)
+     */
     public int[] getItem(int itemId) {
         Map<Integer, Object> items;
         Map<String, Integer> item;
         int[] material = new int[2];
         
         try {
+            // Some funny workaround for the case of numeric keys being bugged
             items = (Map<Integer, Object>)this.getProperty("items");
             
             item = (Map<String, Integer>)items.get(itemId);

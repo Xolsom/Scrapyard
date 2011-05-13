@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * This is a temporary class providing a way to test scrapyard
  * @author Xolsom
  */
 public class ScrapyardCommand implements CommandExecutor {

@@ -1,6 +1,6 @@
 name: Scrapyard
 main: net.thedarktide.xolsom.scrapyard.Scrapyard
-version: 0.1
+version: 0.2
 author: Xolsom
 description: A plugin that will consume used materials (Armor, tools, weapons) and return by chance none, some or all of its constituent valuable component. Sticks won't be returned, but wood, stone, leather, iron, gold, diamond could be.
 commands:
