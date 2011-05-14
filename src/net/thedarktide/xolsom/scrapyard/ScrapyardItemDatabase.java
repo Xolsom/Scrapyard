@@ -1,64 +1,101 @@
 package net.thedarktide.xolsom.scrapyard;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.io.File;
 
+import org.bukkit.Material;
 import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 
 /**
  * This is the item database simplyfing the methods to get allowed items from the yaml file.
  * @author Xolsom
  */
-public class ScrapyardItemDatabase extends Configuration {
+public class ScrapyardItemDatabase {
     private Scrapyard plugin;
     
-    public ScrapyardItemDatabase(File file, Scrapyard plugin) {
-        super(file);
-        
+    public Map<Integer, Map<String, Integer>> items = new HashMap<Integer, Map<String, Integer>>();
+
+    public ScrapyardItemDatabase(Scrapyard plugin) {
         this.plugin = plugin;
     }
-
+    
     /**
-     * Returns an item or more respectively the id and the amount of the valuable material
-     * @param itemId
-     * @return Integer array (0: MaterialId, 1: Amount) or null (the item doesn't exist in the database or the definition is corrupt.)
+     * Loads a database file and writes its content into a nested map
+     * @param file 
      */
-    public int[] getItem(int itemId) {
-        Map<Integer, Object> items;
-        Map<String, Integer> item;
-        int[] material = new int[2];
+    public void load(File file) {
+        Map<Object, Object> itemStrings = null;
+        Map<String, Integer> item = null;
+        Material checkMaterial = null;
         
-        try {
-            // Some funny workaround for the case of numeric keys being bugged
-            items = (Map<Integer, Object>)this.getProperty("items");
+        Configuration database = new Configuration(file);
+        database.load();
+        
+        // Load should reset the database
+        this.items.clear();
+
+        // KEy is an Object too, because the datatypes get assigned on runtime
+        itemStrings = (Map<Object, Object>)database.getProperty("items");        
+        if(itemStrings == null) return;
+
+        for(Object key : itemStrings.keySet()) {
+            String realKey;
+
+            // Check for the right instance
+            if(key instanceof Integer) {
+                realKey = Integer.toString((Integer)key);
+            } else if(key instanceof String) {
+                realKey = (String)key;
+            } else {
+                this.plugin.logWarning("The item database contains an invalid key.");
+                continue;
+            }
+
+            // Match material automatically converts to uppercase and replaces spaces with underlines to make it easier
+            // It aslo checks for the numeric id first
+            checkMaterial = Material.matchMaterial(realKey);
+            if(checkMaterial == null) {
+                this.plugin.logWarning("The item database contains an invalid key. (" + realKey + ")");
+
+                continue;
+            }
+
+            int itemId = checkMaterial.getId();
+            if(this.items != null && this.items.containsKey(itemId)) {
+                this.plugin.logWarning("The item database contains multiple entrys of an item. Only the first one will be considered. (" + checkMaterial.name() + ")");
+                
+                continue;
+            }
+
+            // The rest is about checking the datatypes and keeping only the relevant data inside the item
+            item = (Map<String, Integer>)itemStrings.get(key);
+            try {
+                Map<String, Integer> material = new HashMap<String, Integer>();
+                
+                int mat = item.get("material");
+                int amt = item.get("amount");
             
-            item = (Map<String, Integer>)items.get(itemId);
-            
-            material[0] = item.get("material");
-            material[1] = item.get("amount");
-        } catch(NullPointerException e) {
-            return null;
+                material.put("material", mat);
+                material.put("amount", amt);
+
+                this.items.put(itemId, material);
+            } catch(Exception e) {
+                this.plugin.logWarning("The item database contains an entry with invalid values. (" + checkMaterial.name() + ")");
+            }
         }
-        
-        return material;
     }
     
-/* Requires string keys and is not very effective because of that. Workaround: Numeric keys in quotes -> "12456".
-    public int[] getItem(int itemId) {
-        ConfigurationNode item;
-        int[] material = new int[2];
-        
+    /**
+     * Returns an item from the database or simply null if it's not available
+     * @param itemId
+     * @return 
+     */
+    public Map<String, Integer> getItem(int itemId) {
         try {
-            item = this.getNode("items." + itemId);
-            
-            material[0] = item.getInt("material", 0);
-            material[1] = item.getInt("amount", 0);
-        } catch(NullPointerException e) {
+            return this.items.get(itemId);
+        } catch(Exception e) {
             return null;
         }
-        
-        return material;
     }
-*/
 }
