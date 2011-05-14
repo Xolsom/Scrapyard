@@ -123,7 +123,8 @@ public class Scrapyard extends JavaPlugin {
             if(permissionsPlugin != null) {
                 this.permissionHandler = ((Permissions)permissionsPlugin).getHandler();
             } else {
-                // Blablabla
+                this.logSevere("This plugins requires Permissions.");
+                this.getServer().getPluginManager().disablePlugin(this);
             }
         }
     }

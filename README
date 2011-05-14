@@ -1,6 +1,8 @@
 The Scrapyard plugin is a plugin that will consume used materials (Armor, tools, weapons) and return by chance none, some or all of its constituent valuable component as defined in the item database.
 
-For Scrapyard to work, the YardSale plugin is required. (Executed when a YardSale sign with "Event: Scrapyard" is used.)
+For Scrapyard to work, the YardSale plugin and the Permissions plugin are required. (Executed when a YardSale sign with "Event: Scrapyard" is used.)
+
+The "scrapyard.use" permission has to be true, for it to work.
 
 Those are the config options:
 All of them are optional, as there are default values defined.
