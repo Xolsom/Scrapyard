@@ -1,7 +1,7 @@
 package net.thedarktide.xolsom.scrapyard;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 
 import org.bukkit.Material;
@@ -12,31 +12,31 @@ import org.bukkit.util.config.Configuration;
  * @author Xolsom
  */
 public class ScrapyardItemDatabase {
-    private Scrapyard plugin;
-    
+    private final Scrapyard plugin;
+
     public Map<Integer, Map<String, Integer>> items = new HashMap<Integer, Map<String, Integer>>();
 
     public ScrapyardItemDatabase(Scrapyard plugin) {
         this.plugin = plugin;
     }
-    
+
     /**
      * Loads a database file and writes its content into a nested map
-     * @param file 
+     * @param file
      */
     public void load(File file) {
         Map<Object, Object> itemStrings = null;
-        Map<String, Integer> item = null;
+        Map<String, Object> item = null;
         Material checkMaterial = null;
-        
+
         Configuration database = new Configuration(file);
         database.load();
-        
+
         // Load should reset the database
         this.items.clear();
 
         // KEy is an Object too, because the datatypes get assigned on runtime
-        itemStrings = (Map<Object, Object>)database.getProperty("items");        
+        itemStrings = (Map<Object, Object>)database.getProperty("items");
         if(itemStrings == null) return;
 
         for(Object key : itemStrings.keySet()) {
@@ -64,20 +64,24 @@ public class ScrapyardItemDatabase {
             int itemId = checkMaterial.getId();
             if(this.items != null && this.items.containsKey(itemId)) {
                 this.plugin.logWarning("The item database contains multiple entrys of an item. Only the first one will be considered. (" + checkMaterial.name() + ")");
-                
+
                 continue;
             }
 
-            // The rest is about checking the datatypes and keeping only the relevant data inside the item
-            item = (Map<String, Integer>)itemStrings.get(key);
+            // Getting the item with an Object to allow strings and ids for the materials
+            item = (Map<String, Object>)itemStrings.get(key);
             try {
                 Map<String, Integer> material = new HashMap<String, Integer>();
-                
-                int mat = item.get("material");
-                int amt = item.get("amount");
-            
-                material.put("material", mat);
-                material.put("amount", amt);
+
+                String materialKey;
+                if(item.get("material") instanceof Integer) {
+                    materialKey = Integer.toString((Integer)item.get("material"));
+                } else {
+                    materialKey = (String)item.get("material");
+                }
+
+                material.put("material", Material.matchMaterial(materialKey).getId());
+                material.put("amount", (Integer)item.get("amount"));
 
                 this.items.put(itemId, material);
             } catch(Exception e) {
@@ -85,11 +89,11 @@ public class ScrapyardItemDatabase {
             }
         }
     }
-    
+
     /**
      * Returns an item from the database or simply null if it's not available
      * @param itemId
-     * @return 
+     * @return
      */
     public Map<String, Integer> getItem(int itemId) {
         try {

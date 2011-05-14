@@ -1,0 +1,49 @@
+The Scrapyard plugin is a plugin that will consume used materials (Armor, tools, weapons) and return by chance none, some or all of its constituent valuable component as defined in the item database.
+
+For Scrapyard to work, the YardSale plugin is required. (Executed when a YardSale sign with "Event: Scrapyard" is used.)
+
+Those are the config options:
+All of them are optional, as there are default values defined.
+Cost is the percentual amount in decimal form(between 0 and 1) of what what would mostly be lost when using the system. Formula: ((Durability / Max Durability) * (1 - Cost))
+(config.yml)
+---------
+options:
+	cost: <DOUBLE>
+	defaultColor: <COLORNAME>
+	errorColor: <COLORNAME>
+	successColor: <COLORNAME>
+	dataColor: <COLORNAME>
+---------
+
+The default values are:
+options.cost = 0.25
+options.messageColor = Aqua
+options.successColor = Green
+options.errorColor = Dark_Red
+options.dataColor = Gold
+
+
+The item database consists of the items allowed to be scrapped, the material and the amount of into what it would be scrapped.
+(itemdb.yml)
+---------
+items:
+	<ITEM>:
+		material: <MATERIAL>
+		amount: <INTEGER>
+---------
+
+<ITEM> and <MATERIAL> can either be the item id or the item string. (The string can either be like ITEM_STRING, item_string or item string)
+Example:
+---------
+items:
+	gold spade:
+		material: GOLD_INGOT
+		amount: 1
+	iron_pickaxe:
+		material: 265
+		amount: 3
+	269:
+		material: WOOD
+		amount: 1
+---------
+
