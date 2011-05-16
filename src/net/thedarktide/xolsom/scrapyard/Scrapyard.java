@@ -163,8 +163,19 @@ public class Scrapyard extends JavaPlugin {
 
             Random random = new Random();
 
+            String msg = "";
+            msg += (player.getItemInHand().getType().getMaxDurability() - player.getItemInHand().getDurability());
+            msg += " / ";
+            msg += player.getItemInHand().getType().getMaxDurability();
+            msg += " * (1 - ";
+            msg += this.cost;
+            msg += ")";
+
             // Items durability is the amount of times used, so it should probably be subtracted from the max durability
-            double formula = ((player.getItemInHand().getType().getMaxDurability() - player.getItemInHand().getDurability()) / player.getItemInHand().getType().getMaxDurability()) * (1 - this.cost);
+            double formula = ((double)(player.getItemInHand().getType().getMaxDurability() - player.getItemInHand().getDurability()) / player.getItemInHand().getType().getMaxDurability()) * (1 - this.cost);
+
+            msg += " = " + formula;
+            this.logInfo(msg);
 
             // Check for successses
             for(int i = 0; i < amount; i++, successes += random.nextDouble() < formula ? 1 : 0){}

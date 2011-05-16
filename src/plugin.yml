@@ -1,5 +1,5 @@
 name: Scrapyard
 main: net.thedarktide.xolsom.scrapyard.Scrapyard
-version: 1.0
+version: 1.0.1
 author: Xolsom
 description: A plugin that will consume used materials (Armor, tools, weapons) and return by chance none, some or all of its constituent valuable component as defined in the item database.
